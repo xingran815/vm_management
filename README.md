@@ -29,7 +29,7 @@ the cost at `timestamp = 40s` is summed up from four parts:
     finished_price += vcpu * X * (stop_ts-20);
     ```
 
-4. (negative) the compensation when the vm is not running at `timestamp = 20s`
+4. (**negative**) the compensation when the vm is not running at `timestamp = 20s`
     whenever a job is started after `timestamp = 20s`
 
     ```C++

@@ -1,13 +1,19 @@
-![VM diagram](vm_management.png)
-
 # Main logic
 
 to achieve O(1) time complexity in `get_expenditure`, each user should record the total number of currently active vcpus to calculate the price of running jobs easily.
 
 data structure `list` + `unordered_map<int, list::iterator>` is used for O(1) deletion and O(1) loopup.
 
+this question can be solved from the perspective of the data centre.
+to get the current price, each user should record four prices for O(1) price calculation: 
+* price at last checked timestamp
+* price for current active vms
+* price for finished vms
+* price for compensations
+
 # Example
-this question should be solved from the perspective of the data centre.
+
+![VM diagram](vm_management.png)
 
 the cost at `timestamp = 40s` is summed up from four parts:
 1. the cost at last `timestamp = 20s`,
@@ -16,7 +22,7 @@ the cost at `timestamp = 40s` is summed up from four parts:
     running_price = total_vcpu * X * (40-20);
     ```
 3. the cost of finished vms `finished_price` between `timestamp = 20s` and `timestamp = 40s`.
-    whenever a job is stopped
+    whenever a job is stopped before `timestamp = 40s`
 
     ```C++
     finished_price += vcpu * X * (stop_ts-20);
@@ -29,4 +35,5 @@ the cost at `timestamp = 40s` is summed up from four parts:
     compensation += vcpu * X * (start_ts-20);
     ```
 
-
+# Solution
+the solution is main.cpp

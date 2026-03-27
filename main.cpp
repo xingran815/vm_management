@@ -6,6 +6,8 @@
 #include <list>
 using namespace std;
 
+
+// start_vm, stop_vm, and get_expenditure should be O(1)
 // the current price is calculated as last_price + finished_job_price - compensation + running_job_pricce
 class user_data {
     public:
@@ -13,7 +15,7 @@ class user_data {
         int last_price_ts;      // timestamp when last_price was updated index-1 based
         double last_price;      // price when last_price was updated
         double compensation;    // compensation when the vm starts after last_price_ts
-        double finished_price;  // price for finished vm
+        double finished_price;  // price for finished vms
         int cur_vcpus;          // current vcpus of the user
 
         user_data(int user_id) {
@@ -27,8 +29,8 @@ class user_data {
 };
 class vm_data {
     public:
-        int vcpu;
-        list<user_data>::iterator p_user;
+        int vcpu;                           // vcpu for this vm
+        list<user_data>::iterator p_user;   // pointing to the owner(user) of the vm
         vm_data(int vcpu, list<user_data>::iterator p_user) {
             this->vcpu = vcpu;
             this->p_user = p_user;
@@ -53,6 +55,8 @@ class vm {
                 user_id_map[user_id]--;
             }
             auto p_user = user_id_map[user_id];
+            // this vm starts after last price checking timestamp,
+            // so the compensation should be calculated
             p_user->cur_vcpus += vcpu;
             p_user->compensation += (ts -p_user->last_price_ts)*vcpu*X;
             // create vm_id 
@@ -65,22 +69,30 @@ class vm {
             return vm_id;
         }
         void stop_vm(int ts, string vm_id) {
+            // stop vm with vm_id
             auto p_vm = vm_id_map[vm_id];
             int vcpu = p_vm->vcpu;
             auto p_user = p_vm->p_user;
+            // update the price of finished vms
             p_user->finished_price += (ts-p_user->last_price_ts)*vcpu*X;
             p_user->cur_vcpus -= vcpu;
+            // remove vm from the vm databank, list deletion is O(1)
             vm_data_list.erase(p_vm);
             vm_id_map.erase(vm_id);
         }
         double get_expenditure(int ts, int user_id) {
             auto p_user = user_id_map[user_id];
+            // price calculation is O(1)
+            // it is a sum up among 4 pars:
+            // the running jobs, the finished jobs, the compensation, 
+            // and the price of last checking ts
             double running_price = p_user->cur_vcpus * X * (ts - p_user->last_price_ts);
             double cur_price = running_price + p_user->last_price 
                                 - p_user->compensation + p_user->finished_price;
             // cout << "running_price, last_price, compensation, finished_price, " << 
             //     running_price << ", " << p_user->last_price << ", " 
             //     << p_user->compensation << ", " << p_user->finished_price << endl;
+            // reset the metadata
             p_user->last_price = cur_price;
             p_user->last_price_ts = ts;
             p_user->finished_price = 0.0;

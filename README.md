@@ -1,11 +1,12 @@
 # Main logic
 
-to achieve O(1) time complexity in `get_expenditure`, each user should record the total number of currently active vcpus to calculate the price of running jobs easily.
+To achieve O(1) time complexity in `get_expenditure`, each user should record the total number of currently active vcpus to calculate the price of running jobs easily.
 
-data structure `list` + `unordered_map<int, list::iterator>` is used for O(1) deletion and O(1) loopup.
+Data structure `list` + `unordered_map<int, list::iterator>` is used for O(1) deletion and O(1) loopup.
 
-this question can be solved from the perspective of the data centre.
-to get the current price, each user should record four prices for O(1) price calculation: 
+This question can be solved from the perspective of the data centre. 
+
+To get the current price, each user should record four prices for O(1) price calculation: 
 * price at last checked timestamp
 * price for current active vms
 * price for finished vms

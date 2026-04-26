@@ -1,3 +1,15 @@
+# Problem
+
+Design a VM-management system that supports the following three operations, each in **O(1)** time:
+
+* `start_vm(ts, user_id, vcpu)` — start a VM for `user_id` with `vcpu` virtual CPUs at timestamp `ts`. Returns a unique `vm_id`.
+* `stop_vm(ts, vm_id)` — stop the VM identified by `vm_id` at timestamp `ts`.
+* `get_expenditure(ts, user_id)` — return the total cost the given user has accrued up to timestamp `ts`.
+
+The cost rule: while a VM with `v` vcpus is running over an interval of length `Δt`, it costs `v * X * Δt`, where `X` is a fixed price-per-vcpu-per-unit-time. A user's expenditure is the sum over all of their VMs (running or already stopped) of the time each VM was active multiplied by its vcpus and by `X`.
+
+The challenge is `get_expenditure`: a naive implementation would iterate over the user's VMs, which is O(n). The solution must avoid that by maintaining cached aggregates that can be combined in constant time at query time.
+
 # Main logic
 
 To achieve O(1) time complexity in `get_expenditure`, each user should record the total number of currently active vcpus to calculate the price of running jobs easily.
